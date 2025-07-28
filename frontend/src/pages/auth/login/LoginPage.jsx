@@ -5,6 +5,9 @@ import XSvg from "../../../components/svgs/X";
 
 import { MdOutlineMail } from "react-icons/md";
 import { MdPassword } from "react-icons/md";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { loginApi } from "../../../apis/auth";
+import toast from "react-hot-toast";
 
 export const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -12,8 +15,24 @@ export const LoginPage = () => {
     password: "",
   });
 
+  const queryClient = useQueryClient();
+
+  const {
+    mutate: loginMutation,
+    isPending,
+    isError,
+    error,
+  } = useMutation({
+    mutationFn: loginApi,
+    onSuccess: () => {
+      toast.success("Login successfully!!!");
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    },
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    loginMutation(formData);
   };
 
   const handleInputChange = (e) => {
@@ -52,6 +71,10 @@ export const LoginPage = () => {
               value={formData.password}
             />
           </label>
+          <button className="btn rounded-full btn-primary text-white">
+            {isPending ? "Loading..." : "Login"}
+          </button>
+          {isError && <p className="text-red-500">{error.message}</p>}
         </form>
         <div className="flex flex-col gap-2 mt-4">
           <p className="text-white text-lg">{"Don't"} have an account?</p>

@@ -7,6 +7,9 @@ import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { signupApi } from "../../../apis/auth";
+import toast from "react-hot-toast";
 
 export const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -16,9 +19,18 @@ export const SignupPage = () => {
     password: "",
   });
 
+  const queryClient = useQueryClient();
+
+  const { mutate, isError, isPending, error } = useMutation({
+    mutationFn: signupApi,
+    onSuccess: () => {
+      toast.success("Account created successfully");
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    },
+  });
   const handleSubmit = (e) => {
-    e.preventDefault(); // page won't reload
-    formData;
+    e.preventDefault();
+    mutate(formData);
   };
 
   const handleInputChange = (e) => {
@@ -82,6 +94,11 @@ export const SignupPage = () => {
               value={formData.password}
             />
           </label>
+          <button className="btn rounded-full btn-primary text-white">
+            {isPending ? "Loading..." : "Sign up"}
+          </button>
+
+          {isError && <p className="text-red-500">{error.message}</p>}
         </form>
         <div className="flex flex-col lg:w-2/3 gap-2 mt-4">
           <p className="text-white text-lg">Already have an account?</p>

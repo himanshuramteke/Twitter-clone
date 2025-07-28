@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateJwtToken } from "../utils/generateJwtToken.js";
+import { NODE_ENV } from "../config/serverConfig.js";
 
 export const signupController = async (req, res) => {
   try {
@@ -12,23 +13,23 @@ export const signupController = async (req, res) => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: "Invalid email format " });
+      return res.status(400).json({ message: "Invalid email format " });
     }
 
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-      return res.status(400).json({ error: "Username is already taken" });
+      return res.status(400).json({ message: "Username is already taken" });
     }
 
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
-      return res.status(400).json({ error: "Email is already taken" });
+      return res.status(400).json({ message: "Email is already taken" });
     }
 
     if (password.length < 6) {
       return res
         .status(400)
-        .json({ error: "Password must be atleast 6 characters long" });
+        .json({ message: "Password must be atleast 6 characters long" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -57,11 +58,11 @@ export const signupController = async (req, res) => {
         message: "Signup Successfull",
       });
     } else {
-      res.status(400).json({ error: "Invalid user data" });
+      res.status(400).json({ message: "Invalid user data" });
     }
   } catch (error) {
     console.log("Error in signup controller", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -80,7 +81,7 @@ export const loginController = async (req, res) => {
     );
 
     if (!user || !isPasswordCorrect) {
-      return res.status(400).json({ error: "Invalid username or password" });
+      return res.status(400).json({ message: "Invalid username or password" });
     }
 
     generateJwtToken(user._id, res);
@@ -98,17 +99,21 @@ export const loginController = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in login controller", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 export const logoutController = async (req, res) => {
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: NODE_ENV !== "development",
+    });
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.log("Error in logout controller", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -118,6 +123,6 @@ export const getmeController = async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     console.log("Error in getMe controller", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };

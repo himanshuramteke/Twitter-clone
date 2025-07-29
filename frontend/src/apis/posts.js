@@ -17,3 +17,13 @@ export const getPostsApi = async (feedType) => {
     );
   }
 };
+
+export const deletePostApi = async (postId) => {
+  try {
+    const response = await axiosInstance.delete(`/posts/delete/${postId}`);
+    return response.data;
+  } catch (error) {
+    console.log("Error in deletePost Api", error);
+    throw new Error(error?.response?.data?.message || "Delete Post failed");
+  }
+};

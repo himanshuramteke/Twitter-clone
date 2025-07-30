@@ -27,3 +27,16 @@ export const deletePostApi = async (postId) => {
     throw new Error(error?.response?.data?.message || "Delete Post failed");
   }
 };
+
+export const createPostApi = async ({ text, img }) => {
+  try {
+    const response = await axiosInstance.post("/posts/create", {
+      text,
+      img,
+    });
+    return response.data;
+  } catch (error) {
+    console.log("Error in createPost Api", error);
+    throw new Error(error?.response?.data?.message || "Create post failed");
+  }
+};

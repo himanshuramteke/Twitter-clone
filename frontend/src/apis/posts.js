@@ -40,3 +40,20 @@ export const createPostApi = async ({ text, img }) => {
     throw new Error(error?.response?.data?.message || "Create post failed");
   }
 };
+
+export const likeUnlikePostApi = async (postId) => {
+  if (!postId) {
+    throw new Error("Cannot like post: Post ID is missing");
+  }
+  try {
+    const response = await axiosInstance.post(`/posts/like/${postId}`);
+    return response.data;
+  } catch (error) {
+    const errorMsg =
+      error.response?.data?.error ||
+      error.message ||
+      "Failed to like/unlike post";
+    console.error("Like/unlike failed:", errorMsg);
+    throw new Error(errorMsg);
+  }
+};

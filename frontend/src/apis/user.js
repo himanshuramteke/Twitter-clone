@@ -11,3 +11,13 @@ export const getSuggestedUsersApi = async () => {
     );
   }
 };
+
+export const FollowUnfollowUsersApi = async (userId) => {
+  try {
+    const response = await axiosInstance.post(`/users/follow/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.log("Error in FollowUnfollowUsersApi", error);
+    throw new Error(error?.response?.data?.message || "Follow Unfollow failed");
+  }
+};

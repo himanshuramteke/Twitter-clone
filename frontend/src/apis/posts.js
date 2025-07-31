@@ -57,3 +57,15 @@ export const likeUnlikePostApi = async (postId) => {
     throw new Error(errorMsg);
   }
 };
+
+export const PostCommentApi = async ({ postId, text }) => {
+  try {
+    const response = await axiosInstance.post(`/posts/comment/${postId}`, {
+      text,
+    });
+    return response.data;
+  } catch (error) {
+    console.log("Error in PostCommentApi", error);
+    throw new Error(error?.response?.data?.message || "Post Comment failed");
+  }
+};

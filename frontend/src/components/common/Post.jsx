@@ -5,7 +5,11 @@ import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { deletePostApi, likeUnlikePostApi } from "../../apis/posts";
+import {
+  deletePostApi,
+  likeUnlikePostApi,
+  PostCommentApi,
+} from "../../apis/posts";
 import { toast } from "react-hot-toast";
 import LoadingSpinner from "./LoadingSpinner";
 import { getMeApi } from "../../apis/auth";
@@ -75,6 +79,15 @@ const Post = ({ post }) => {
     },
   });
 
+  const { mutate: commentPost, isPending: isCommenting } = useMutation({
+    mutationFn: PostCommentApi,
+    onSuccess: () => {
+      toast.success("Comment posted successfully");
+      setComment("");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+
   const postOwner = post.user;
   const isLiked = post.likes.includes(authUser._id);
   const isMyPost = authUser._id === post.user._id;
@@ -88,6 +101,13 @@ const Post = ({ post }) => {
   const handleLikePost = () => {
     if (isLiking) return;
     likePost(post._id);
+  };
+
+  const handlePostComment = (e) => {
+    console.log("Commented");
+    e.preventDefault();
+    if (isCommenting) return;
+    commentPost({ postId: post._id, text: comment });
   };
 
   const toggleBookmark = () => {
@@ -220,60 +240,55 @@ const Post = ({ post }) => {
       {/* Comments Modal */}
       <dialog
         id={`comments_modal${post._id}`}
-        className="modal modal-bottom sm:modal-middle"
+        className="modal border-none outline-none"
       >
-        <div className="modal-box bg-white dark:bg-gray-800 rounded-xl">
-          <h3 className="font-bold text-lg mb-4">Comments</h3>
-          <div className="max-h-[50vh] overflow-y-auto">
-            {post.comments.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">
-                No comments yet. Be the first to comment!
+        <div className="modal-box rounded border border-gray-600">
+          <h3 className="font-bold text-lg mb-4">COMMENTS</h3>
+          <div className="flex flex-col gap-3 max-h-60 overflow-auto">
+            {post.comments.length === 0 && (
+              <p className="text-sm text-slate-500">
+                No comments yet 🤔 Be the first one 😉
               </p>
-            ) : (
-              post.comments.map((comment) => (
-                <div
-                  key={comment._id}
-                  className="flex gap-3 py-3 border-b border-gray-100 dark:border-gray-700"
-                >
-                  <div className="avatar">
-                    <div className="w-8 rounded-full">
-                      <img
-                        src={
-                          comment.user.profileImg || "/avatar-placeholder.png"
-                        }
-                        alt={comment.user.fullName}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex gap-1 items-center">
-                      <span className="font-bold">{comment.user.fullName}</span>
-                      <span className="text-gray-500 text-sm">
-                        @{comment.user.username}
-                      </span>
-                    </div>
-                    <p className="mt-1">{comment.text}</p>
+            )}
+            {post.comments.map((comment) => (
+              <div key={comment._id} className="flex gap-2 items-start">
+                <div className="avatar">
+                  <div className="w-8 rounded-full">
+                    <img
+                      src={comment.user.profileImg || "/avatar-placeholder.png"}
+                    />
                   </div>
                 </div>
-              ))
-            )}
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1">
+                    <span className="font-bold">{comment.user.fullName}</span>
+                    <span className="text-gray-700 text-sm">
+                      @{comment.user.username}
+                    </span>
+                  </div>
+                  <div className="text-sm">{comment.text}</div>
+                </div>
+              </div>
+            ))}
           </div>
-          <form className="mt-4 flex gap-2">
-            <input
-              type="text"
+          <form
+            className="flex gap-2 items-center mt-4 border-t border-gray-600 pt-2"
+            onSubmit={handlePostComment}
+          >
+            <textarea
+              className="textarea w-full p-1 rounded text-md resize-none border focus:outline-none  border-gray-800"
               placeholder="Add a comment..."
-              className="input input-bordered flex-1"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
             />
-            <button className="btn btn-primary">Post</button>
+            <button className="btn btn-primary rounded-full btn-sm text-white px-4">
+              {isCommenting ? <LoadingSpinner size="md" /> : "Post"}
+            </button>
           </form>
-          <div className="modal-action">
-            <form method="dialog">
-              <button className="btn">Close</button>
-            </form>
-          </div>
         </div>
+        <form method="dialog" className="modal-backdrop">
+          <button className="outline-none">close</button>
+        </form>
       </dialog>
     </div>
   );

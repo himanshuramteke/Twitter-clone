@@ -33,3 +33,13 @@ export const getUserProfileApi = async (username) => {
     );
   }
 };
+
+export const updateUserProfile = async (formData) => {
+  try {
+    const response = await axiosInstance.post(`/users/update`, formData);
+    return response.data;
+  } catch (error) {
+    console.log("Error in updateUserProfile", error);
+    throw new Error(error?.response?.data?.message || "update User Profile");
+  }
+};

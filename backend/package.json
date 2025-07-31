@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "npx nodemon src/index.js"
+    "dev": "npx nodemon src/index.js",
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -18,7 +19,8 @@
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.16.4"
+    "mongoose": "^8.16.4",
+    "twitter-clone": "file:.."
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

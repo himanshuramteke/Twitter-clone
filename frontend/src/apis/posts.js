@@ -1,10 +1,20 @@
 import axiosInstance from "../config/axiosConfig";
 
-export const getPostsApi = async (feedType) => {
+export const getPostsApi = async (feedType, username, userId) => {
   let endpoint = "/posts/all";
 
-  if (feedType === "following") {
-    endpoint = "/posts/following";
+  switch (feedType) {
+    case "following":
+      endpoint = "/posts/following";
+      break;
+    case "posts":
+      endpoint = `/posts/user/${username}`;
+      break;
+    case "likes":
+      endpoint = `/posts/likes/${userId}`;
+      break;
+    default:
+      endpoint = "/posts/all";
   }
 
   try {

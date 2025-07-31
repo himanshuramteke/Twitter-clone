@@ -4,20 +4,20 @@ import { useQuery } from "@tanstack/react-query";
 import { getPostsApi } from "../../apis/posts";
 import { useEffect } from "react";
 
-const Posts = ({ feedType }) => {
+const Posts = ({ feedType, username, userId }) => {
   const {
     data: posts,
     isLoading,
     refetch,
     isRefetching,
   } = useQuery({
-    queryKey: ["posts", feedType],
-    queryFn: () => getPostsApi(feedType),
+    queryKey: ["posts", feedType, username, userId],
+    queryFn: () => getPostsApi(feedType, username, userId),
   });
 
   useEffect(() => {
     refetch();
-  }, [feedType, refetch]);
+  }, [feedType, username, userId, refetch]);
 
   return (
     <>

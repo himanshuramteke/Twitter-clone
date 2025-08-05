@@ -1,8 +1,10 @@
-# Twitter Clone 𝕏
+<h1 align="center">Twitter Clone 𝕏</h1>
+
+![](./frontend/public/Screenshot%202025-07-31%20221827.png)
 
 This project is a full-stack Twitter clone using MERN stack, designed to replicate the core functionality of Twitter. It allows users to sign up, log in, create and manage posts, follow other users, receive notifications, and customize their profiles. The application is built using a modern tech stack, with a React frontend and a Node.js/Express backend.
 
-## 🚀 Key Features
+<h1 align="center">Key Features🚀</h1>
 
 - **User Authentication:** Secure signup, login, and logout functionality using JWT.
 - **Post Management:** Create, read, update, and delete posts with text and images.
@@ -164,10 +166,6 @@ twitter-clone/
 ├── package.json
 └── README.md
 ```
-
-## 📸 Screenshot
-
-![](./frontend/public/Screenshot%202025-07-31%20221827.png)
 
 ## 🤝 Contributing
 
